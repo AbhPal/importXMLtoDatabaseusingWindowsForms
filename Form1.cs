@@ -36,7 +36,8 @@ namespace importDatafromXMLtoDatabaseusingWindowsForms
             if(dialogResult == System.Windows.Forms.DialogResult.OK)
             {
                 this.fileName = openFileDialog.FileName;
-                string messageName = "XML file " + this.fileName + " selected.";
+                fileNameOnly = this.fileName.Replace(currentPath, "");
+                string messageName = "XML file " + fileNameOnly + " selected.";
                 MessageBox.Show(messageName);
             }
 
@@ -98,12 +99,12 @@ namespace importDatafromXMLtoDatabaseusingWindowsForms
 
                 }
 
-                string messageBox = "XML file" + this.fileName + "has been successfully imported into database";
+                string messageBox = "XML file" + fileNameOnly + "has been successfully imported into database";
                 MessageBox.Show(messageBox);
 
-                string currentFile = currentPath + this.fileName;
-                string archiveFile = archivePath + this.fileName;
-                //System.IO.File.Move(currentFile, archiveFile);
+                string currentFile = currentPath + fileNameOnly;
+                string archiveFile = archivePath + fileNameOnly;
+                System.IO.File.Move(currentFile, archiveFile);
 
             }
             catch
