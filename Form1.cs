@@ -10,10 +10,11 @@ namespace importDatafromXMLtoDatabaseusingWindowsForms
     {
         private string fileName     = "";
         private string fileNameOnly = "";
+
         //private bool accepted = false;        // Not required
-        string currentPath  = @"C:\Users\abhij\OneDrive\Mutual_Fund\Current\";
-        string archivePath  = @"C:\Users\abhij\OneDrive\Mutual_Fund\Archieve\";
-        string errorPath    = @"C:\Users\abhij\OneDrive\Mutual_Fund\Error\";
+        readonly string currentPath  = @"C:\Users\abhij\OneDrive\Mutual_Fund\Current\";
+        readonly string archivePath  = @"C:\Users\abhij\OneDrive\Mutual_Fund\Archieve\";
+        readonly string errorPath    = @"C:\Users\abhij\OneDrive\Mutual_Fund\Error\";
 
 
         public ifxtd()
@@ -64,6 +65,7 @@ namespace importDatafromXMLtoDatabaseusingWindowsForms
                 }
                 sqlConnection1.Close();
 
+                progressBar1.Minimum = 0;
 
 
 
@@ -71,14 +73,16 @@ namespace importDatafromXMLtoDatabaseusingWindowsForms
                 xmlDocument.Load(this.fileName);
 
                 XmlNodeList xmlNodeList = xmlDocument.SelectNodes("/root/row");
+                progressBar1.Minimum = 0;
+                progressBar1.Maximum = xmlNodeList.Count;
 
                 foreach (XmlNode xmlNode in xmlNodeList)
                 {
-                    string fundName = xmlNode["Fund_Name"].InnerText;
-                    string amfiCode = xmlNode["AmfiCode"].InnerText;
-                    string planName = xmlNode["Plan_Name"].InnerText;
-                    string navDate = xmlNode["NAV_Date"].InnerText;
-                    string navAmount = xmlNode["NAV_Amount"].InnerText;
+                    string fundName     = xmlNode["Fund_Name"].InnerText;
+                    string amfiCode     = xmlNode["AmfiCode"].InnerText;
+                    string planName     = xmlNode["Plan_Name"].InnerText;
+                    string navDate      = xmlNode["NAV_Date"].InnerText;
+                    string navAmount    = xmlNode["NAV_Amount"].InnerText;
 
 
                     SqlConnection sqlConnection2 = new SqlConnection(connectionString);
@@ -87,32 +91,27 @@ namespace importDatafromXMLtoDatabaseusingWindowsForms
                     using (SqlCommand sqlCommand2 = new SqlCommand(query2, sqlConnection2))
                     {
                         sqlCommand2.ExecuteNonQuery();
+                        progressBar1.Value++;
                     }
                     sqlConnection2.Close();
 
-
-
-
-
                     // Look for the name in the connectionStrings section.
-
-
                 }
 
                 string messageBox = "XML file" + fileNameOnly + "has been successfully imported into database";
                 MessageBox.Show(messageBox);
 
-                string currentFile = currentPath + fileNameOnly;
-                string archiveFile = archivePath + fileNameOnly;
+                string currentFile      = currentPath + fileNameOnly;
+                string archiveFile      = archivePath + fileNameOnly;
                 System.IO.File.Move(currentFile, archiveFile);
 
             }
             catch
             {
-                //MessageBox.Show("Can't import the selected xml file.");
-                //string currentFile = currentPath + this.fileName;
-                //string errorFile = errorPath + this.fileName;
-                //System.IO.File.Move(currentFile, errorFile);
+                MessageBox.Show("Can't import the selected " + fileNameOnly + "xml file.");
+                string currentFile      = currentPath + fileNameOnly;
+                string errorFile        = errorPath + fileNameOnly;
+                System.IO.File.Move(currentFile, errorFile);
             }
 
 
